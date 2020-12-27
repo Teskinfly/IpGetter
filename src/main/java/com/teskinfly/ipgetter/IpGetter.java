@@ -17,6 +17,7 @@ class IpGetterThread implements Runnable{
     int startIndex;
     int endIndex;
     CountDownLatch latch;
+    final int sleepTime = 0;
     IpGetterThread (ArrayList<String> domains, int startIndex, int endIndex, CountDownLatch countDownLatch) {
         this.domains = domains;
         this.startIndex = startIndex;
@@ -68,7 +69,7 @@ class IpGetterThread implements Runnable{
         } catch (IOException e) {
             //超时重试机制，可以提高映射数量
             try {
-                TimeUnit.MILLISECONDS.sleep(600);
+                TimeUnit.MILLISECONDS.sleep(sleepTime);
             } catch (InterruptedException e2) {
             }
             String ipAndDomain = getIpAndDomain(url, domain,cnt+1);
@@ -121,6 +122,7 @@ public class IpGetter {
             bufferedWriter.write(ipAndDomain);
             bufferedWriter.newLine();
         }
+        bufferedWriter.flush();
         end = System.currentTimeMillis();
         System.out.println("用时："+formatDuring(end-start));
 
