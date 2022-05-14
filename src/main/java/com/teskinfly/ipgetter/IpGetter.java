@@ -37,26 +37,30 @@ class IpGetterThread implements Runnable{
         latch.countDown();
         System.out.println(Thread.currentThread().getName()+"执行完毕，还剩下线程数："+latch.getCount());
     }
-    public String getUrl(String domain) {//根据域名解析出ipaddress对应的网址
-        String[] parts = domain.split("\\.");//正则表达式
-        String url = null;
-        if (parts.length >= 3) {//二级域名以上
-            if (parts.length > 3)
-                url = IpGetter.PART1+parts[parts.length-2]+"."+parts[parts.length-1]+"."+ IpGetter.PART2+domain;
-            else
-                url = IpGetter.PART1+parts[1]+"."+parts[2]+"."+ IpGetter.PART2+domain;
-        }
-        else if (parts.length == 2){//一级域名
-            url = IpGetter.PART1+domain+"."+ IpGetter.PART2;
-        }
-        return url;
+    //20220514测试 这个拼接方式已经过期了
+//    public String getUrl(String domain) {//根据域名解析出ipaddress对应的网址
+//        String[] parts = domain.split("\\.");//正则表达式
+//        String url = null;
+//        if (parts.length >= 3) {//二级域名以上
+//            if (parts.length > 3)
+//                url = IpGetter.PART1+parts[parts.length-2]+"."+parts[parts.length-1]+"."+ IpGetter.PART2+domain;
+//            else
+//                url = IpGetter.PART1+parts[1]+"."+parts[2]+"."+ IpGetter.PART2+domain;
+//        }
+//        else if (parts.length == 2){//一级域名
+//            url = IpGetter.PART1+domain+"."+ IpGetter.PART2;
+//        }
+//        return url;
+//    }
+    public String getUrl(String domain) {
+        return "https://ipaddress.com/website/" + domain;
     }
     public String getIpAndDomain(String url, String domain, int cnt) {//去ipaddress得到ip与域名
         if (url == null|| cnt >= 10) return null; //尝试10次以上，放弃
 //        return url+" "+domain;
         Document document = null;
         try {
-            document = Jsoup.connect(url).get();
+            document = Jsoup.connect(url).header("referer", "https://api.fouanalytics.com").get(); //新版添加了不能直接访问
             Element panel = document.getElementsByClass("panel").first();
             Element first = panel.getElementsByClass("comma-separated").first();
             if (first == null) {
@@ -85,9 +89,9 @@ public class IpGetter {
     public static final String PART2 = "ipaddress.com/";
     private static final String DOMAINS = "domains.txt";
     private static final String OUTPUT = "host.txt";
-//    private static final String DOMAINS = "G:\\TestFile\\domains.txt";
-//    private static final String OUTPUT = "G:\\TestFile\\host.txt";
-    private static int PoolSize = 500;
+//    private static final String DOMAINS = "G:\\BaiduNetdiskDownload\\HostGenerator\\multi_thread\\domains.txt";
+//    private static final String OUTPUT = "G:\\BaiduNetdiskDownload\\HostGenerator\\multi_thread\\host.txt";
+    private static int PoolSize = 17;
     public static void main(String[] args) throws IOException {
 //        getIpMapping();已废弃
         long start = System.currentTimeMillis(),end;
