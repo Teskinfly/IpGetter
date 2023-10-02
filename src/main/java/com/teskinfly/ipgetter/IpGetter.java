@@ -66,23 +66,24 @@ class IpGetterThread implements Runnable {
         Document document = null;
         try {
             document = Jsoup.connect(url).header("referer", "https://api.fouanalytics.com").get(); //新版添加了不能直接访问
-            Element panel = document.getElementsByClass("map-container").first();      //20221128 这里改了名称
+            Element panel = document.getElementsByClass("tab-container").first();      //20221128 这里改了名称
             Element first = null;
             try {
-                first = panel.getElementsByClass("comma-separated").first();
+                first = panel.getElementById("tabpanel-dns-a");
             } catch (Exception e) {
                 System.out.println(url + "解析错误");
                 return null;
             }
-            if (first == null) {
-                first = document.getElementsByClass("comma-separated").first();
-                if (first == null) {
-                    System.out.println(url + ": 找不到对应的要素");
-                    return null;
-                }
-            }
-            Elements li = first.getElementsByTag("li");
-            String ip = li.first().text();
+//            if (first == null) {
+//                first = document.getElementsByClass("comma-separated").first();
+//                if (first == null) {
+//                    System.out.println(url + ": 找不到对应的要素");
+//                    return null;
+//                }
+//            }
+//            Elements li = first.getElementsByTag("li");
+            Element a = first.getElementsByTag("a").get(0);
+            String ip = a.text();
             if (!isIp(ip)) {
                 System.out.println(url + "找到错误Ip" + ip);
             }
@@ -108,7 +109,7 @@ public class IpGetter {
     public static final String PART2 = "ipaddress.com/";
     private static final String DOMAINS = "domains.txt";
     private static final String OUTPUT = "host.txt";
-    //    private static final String DOMAINS = "D:\\BaiduNetdiskDownload\\HostGenerator\\multi_thread\\domains.txt";
+    //        private static final String DOMAINS = "D:\\BaiduNetdiskDownload\\HostGenerator\\multi_thread\\domains.txt";
 //    private static final String OUTPUT = "D:\\BaiduNetdiskDownload\\HostGenerator\\multi_thread\\host.txt";
     private static int POOL_SIZE = 17;
 
